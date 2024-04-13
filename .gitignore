@@ -164,3 +164,6 @@ bazel-bin
 bazel-out
 bazel-testlogs
 bazel-workspace
+
+# supervisor files
+supervisord.pid

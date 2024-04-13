@@ -14,5 +14,10 @@ py_library(
         requirement("MarkupSafe"),
         requirement("blinker"),
         requirement("flask-material"),
+        requirement("flask-mongoengine"),
+        requirement("mongoengine"),
+        requirement("pymongo"),
+        requirement("wtforms"),
+        requirement("flask-wtf"),
     ],
 )
