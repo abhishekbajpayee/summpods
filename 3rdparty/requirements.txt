@@ -1,0 +1,10 @@
+## Flask
+Flask>=2.3
+Jinja2>=2.10.1
+Werkzeug>=0.15
+itsdangerous>=0.24
+click>=5.1
+# MarkupSafe version >= 2.1 fails pip_import 
+MarkupSafe==2.0.1
+Blinker>=1.6
+Flask-Material>=0.1
