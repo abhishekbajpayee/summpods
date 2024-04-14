@@ -6,10 +6,10 @@ py_library(
     name = "ws",
     srcs = [
         "conf/flask_conf.py",
-        "home.py",
+        "views.py",
     ],
     deps = [
-        "//3rdparty:flask",
+        "//src/lib",
     ],
     data = [
         "//src:templates",
@@ -21,7 +21,6 @@ py_binary(
     srcs = ["wsgi.py"],
     deps = [
         ":ws",
-        ":models",
     ],
 )
 
@@ -31,70 +30,17 @@ py_binary(
         "app.py",
     ],
     deps=[
-        ":taddy",
-        ":transcribe",
-        ":models",
-        ":utils",
+        "//src/lib",
     ],
-)
-
-# Taddy library
-py_library(
-    name = "taddy",
-    srcs = ["taddy.py"],
-    deps=[
-        ":utils",
-        requirement("requests"),
-        requirement("urllib3"),
-        requirement("chardet"),
-        requirement("idna"),
-        requirement("certifi"),
-    ],
-)
-
-# Transcription library
-py_library(
-    name = "transcribe",
-    srcs = ["transcribe.py"],
-    deps=[
-        ":utils",
-        ":models",
-        requirement("openai"),
-        requirement("urllib3"),
-    ],
-)
-
-# Utils
-py_library(
-    name = "utils",
-    srcs = ["utils.py"],
-    deps=[
-        requirement("pyyaml"),
-    ],
-)
-
-# Models
-py_library(
-    name = "models",
-    srcs = ["models.py"],
-    deps=[
-        requirement("flask-mongoengine"),
-        "//3rdparty:flask",
-    ]
 )
 
 py_test(
-    name = "flake",
+    name = "static_tests",
     srcs = [
         "flake.py",
     ],
     main = "flake.py",
-    args = glob(["*.py"]),
-    data = glob(["*.py"]),
+    args = glob(["**/*.py"]),
+    data = glob(["**/*.py"]),
     legacy_create_init = 0,
-    deps = [
-        requirement("flake8"),
-        requirement("pyflakes"),
-        requirement("pycodestyle"),
-    ],
 )

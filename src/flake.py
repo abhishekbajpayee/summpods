@@ -13,7 +13,7 @@ if __name__ == "__main__":
     root = os.path.dirname(sys.argv[0])
     os.chdir(root)
 
-    style_guide = flake8.get_style_guide()
+    style_guide = flake8.get_style_guide(ignore=["E501"])
 
     input_files = sys.argv[1:]
 

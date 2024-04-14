@@ -1,11 +1,10 @@
 import argparse
 import logging
 from flask import Flask
+from flask_admin import Admin
 from flask_material import Material
-from src.models import (
-    TranscriptionModel,
-    db
-)
+from flask_mongoengine import MongoEngine
+from src.lib import models
 
 logger = logging.getLogger(__name__)
 
@@ -22,23 +21,30 @@ def parse_args():
 
 def create_app(config_filename="src.conf.flask_conf.BaseConfig"):
     app = Flask(__name__)
+
+    # init MongoDB connection
     app.config["MONGODB_SETTINGS"] = {
         "db": "summpods",
         "host": "localhost",
         "port": 27017
     }
+    db = MongoEngine()
     db.init_app(app)
 
-    # fetch and print existing models
-    models = TranscriptionModel.objects.all()
-    logger.info(models)
-
+    # init Material
     _ = Material(app)
+
+    # init Admin
+    admin = Admin(app)
+    admin.add_view(models.PodcastView(models.Podcast))
+    admin.add_view(models.EpisodeView(models.Episode))
+    admin.add_view(models.TranscriptionView(models.Transcription))
+    admin.add_view(models.SummaryView(models.Summary))
 
     app.config.from_object(config_filename)
 
-    from src.home import home
-    app.register_blueprint(home)
+    from src.views import bp
+    app.register_blueprint(bp)
 
     return app
 

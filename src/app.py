@@ -1,18 +1,17 @@
 import argparse
 import logging
 from flask import Flask
-from src import (
+from flask_mongoengine import MongoEngine
+from src.lib import (
     taddy,
-    transcribe,
+    summarize,
 )
-from src.models import (
-    db,
+from src.lib.models import (
     Episode,
     Podcast,
     Transcription,
     TranscriptionModel,
 )
-from src.utils import queue
 
 logger = logging.getLogger(__name__)
 
@@ -43,16 +42,15 @@ if __name__ == "__main__":
         "port": 27017
     }
 
+    db = MongoEngine()
     db.init_app(app)
 
-    podcast = taddy.search_podcast(args.search_term)
+    podcast = taddy.search_or_get_podcast(term=args.search_term)
     if podcast:
         logger.info(podcast.name)
         episodes = taddy.get_episodes(podcast, limitPerPage=25)
 
-    # TODO: these tasks do not execute because this script exists
-    queue.enqueue(transcribe.transcribe, kwargs={"episode": episodes[0]})
-    queue.enqueue(transcribe.transcribe, kwargs={"episode": episodes[2]})
+    summarize.transcribe_and_summarize(episodes[0])
 
     logger.info(Podcast.objects())
     logger.info(Episode.objects())
