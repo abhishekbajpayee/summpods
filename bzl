@@ -9,6 +9,12 @@ if [ ! -d "/tmp/build_output" ]; then
   mkdir -p "/tmp/build_output/logs"
 fi
 
+# Check if directory for mongodb exists
+if [ ! -d "~/db" ]; then
+    # Create the directory
+    mkdir -p "~/db"
+fi
+
 # Build container using dockerfile
 docker build -t build_image .
 

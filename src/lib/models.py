@@ -89,7 +89,7 @@ class TranscriptionView(ModelView):
         "text",
     )
 
-    
+
 class SummaryView(ModelView):
     column_list = (
         "summarization_model",

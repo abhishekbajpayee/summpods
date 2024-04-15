@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def get_audio_splits(file_path):
     """
-    Generates a list of audio splits from the given file path, splitting 
+    Generates a list of audio splits from the given file path, splitting
         the file if its size exceeds the maximum file size.
 
     Args:
@@ -31,7 +31,7 @@ def get_audio_splits(file_path):
         List[str]: A list of file paths representing the audio splits.
 
     Notes:
-        - If the file size is below the maximum file size, the function returns a 
+        - If the file size is below the maximum file size, the function returns a
             list containing the original file path.
         - The maximum file size is set to 26,214,400 (25MB) bytes.
     """
@@ -40,12 +40,11 @@ def get_audio_splits(file_path):
     if file_size < MAX_FILE_SIZE:
         return [file_path]
 
-    logger.debug("File size above 25MB, splitting file...")
+    logger.info("Podcast audio file size above 25MB, splitting file...")
     src_audio = pydub.AudioSegment.from_file(file_path)
     duration_seconds = src_audio.duration_seconds
     num_splits = math.ceil(file_size / (MAX_FILE_SIZE * 0.99))
-    logger.info(num_splits)
-    logger.info(duration_seconds)
+    logger.info("File will be split into {num_splits} audio slices...".format(num_splits=num_splits))
 
     duration_milliseconds = duration_seconds * 1000
     split_duration_milliseconds = int(duration_milliseconds / num_splits)
@@ -78,18 +77,21 @@ def transcribe_files(audio_files):
         - Improve the joining logic to handle lost words and broken sentences.
           Explore overlapping audio chunks for smarter joining.
     """
-    logger.debug("Transcribing files...")
     split_transcriptions = []
-    for audio_file in audio_files:
+    for i, audio_file in enumerate(audio_files):
+        logger.info("Transcribing file {i}/{N}".format(i=i + 1, N=len(audio_files)))
         with open(audio_file, "rb") as f:
             transcription_result = openai.Audio.transcribe("whisper-1", f)
             logger.debug(transcription_result)
             split_transcriptions.append(transcription_result)
 
     transcription_result = ''
-    logger.debug("Joining transcription results...")
-    for transcription_chunk in split_transcriptions:
+    logger.info("Joining transcription results...")
+    for i, transcription_chunk in enumerate(split_transcriptions):
         logger.debug(transcription_chunk["text"])
+        if i > 0:
+            if transcription_result[-1] != " ":
+                transcription_result += " "
         transcription_result += transcription_chunk["text"]
 
     return transcription_result
@@ -148,7 +150,8 @@ def transcribe(episode, model=TranscriptionModel(name="whisper")):
 
     # delete downloadeded / generated file
     logger.debug("Deleting files...")
-    audio_splits += [tmp_filename]
+    if len(audio_splits) > 1:
+        audio_splits += [tmp_filename]
     for filename in audio_splits:
         logger.debug(filename)
         os.remove(filename)

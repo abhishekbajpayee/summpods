@@ -8,6 +8,7 @@
   </div>
   <div class="row">
     <div class="col s12 m7 l4">
+      {% if podcast %}
       <div class="card">
         <div class="card-image">
           <img src="{{ podcast.imageUrl }}">
@@ -20,6 +21,9 @@
           <a href="/episodes?podcast_uuid={{ podcast.uuid }}">View Episodes</a>
         </div>
       </div>
+      {% else %}
+      <p>No podcast found!</p>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

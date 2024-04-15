@@ -6,7 +6,7 @@ RUN python3 -m pip install --upgrade pip
 USER root
 
 # generic dependencies
-RUN apt install -y gnupg gpg curl lsb-release wget
+RUN apt update && apt install -y gnupg gpg curl lsb-release wget
 
 # install MongoDB and mongoengine
 RUN wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add - && \

@@ -20,6 +20,17 @@ logger = logging.getLogger(__name__)
 
 
 def handle_response(response):
+    """
+    Handle the response from the API.
+
+    Args:
+        response: The response object from the API request.
+
+    Returns:
+        If the response status code is 200, returns the JSON data from the response.
+        Otherwise, returns False.
+    """
+    logger.debug(response.json())
     if response.status_code == 200:
         return response.json()
     else:
@@ -76,7 +87,10 @@ def search_or_get_podcast(term=None, uuid=None):
         headers=HEADERS
     )
     response_json = handle_response(response)
-    podcast_json = response_json["data"]["getPodcastSeries"]
+    if (podcast_json := response_json["data"]["getPodcastSeries"]) is None:
+        logger.error("No podcast found!")
+        return None
+
     logger.debug(podcast_json)
     podcast = Podcast(
         name=podcast_json["name"],
